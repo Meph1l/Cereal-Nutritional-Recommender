@@ -1,0 +1,15 @@
+# Ignore a specific folder (like dependencies)
+node_modules/
+build/
+
+# Ignore a specific file (like secrets or environment variables)
+.env
+config.local.js
+
+# Ignore all files with a specific extension (using the * wildcard)
+*.log
+*.zip
+
+# Ignore system-generated files
+.DS_Store
+Thumbs.db

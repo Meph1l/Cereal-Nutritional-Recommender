@@ -33,7 +33,7 @@ Then the branches are merged for the login usecase to work
 9. git status
 10. git commit -m "My part of project"
 11. git status
-12. git push origin branch/feature/your-feature-name
+12. git push origin branch/feature/your-feature-name            
 
 
 # Merging after branch is finished

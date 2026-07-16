@@ -14,8 +14,15 @@ function App() {
     return data;
   }
 
+  async function testAPI(){
+    const res = await fetch('/testAPI');
+    const data = await res.json();
+
+    return data;
+  }
+
   useEffect( () => {
-    async function fetchData() {
+     async function fetchCallData() {
       try {
         const data = await testCall();
         console.log(data); 
@@ -23,8 +30,17 @@ function App() {
         console.error("Failed to fetch:", error);
       }
     }
+    async function fetchAPIData() {
+      try {
+        const data = await testAPI();
+        console.log(data); 
+      } catch (error) {
+        console.error("Failed to fetch:", error);
+      }
+    }
 
-  fetchData();
+  //fetchAPIData(); //to test openai responses
+  fetchCallData();
   }, []);
 
   return (

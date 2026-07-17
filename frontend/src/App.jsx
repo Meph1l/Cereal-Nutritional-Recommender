@@ -1,141 +1,132 @@
-import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
-
-  async function testCall(){
-    const res = await fetch('/testProxy');
-    const data = await res.json();
-
-    return data;
-  }
-
-  useEffect( () => {
-    async function fetchData() {
-      try {
-        const data = await testCall();
-        console.log(data); 
-      } catch (error) {
-        console.error("Failed to fetch:", error);
-      }
-    }
-
-  fetchData();
-  }, []);
-
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
+    <div className="app">
+      {/* Website navigation */}
+      <header className="navbar">
+        <a className="logo" href="#home">
+          Smart Cereal Finder
+        </a>
+
+        <nav className="nav-links">
+          <a href="#home">Home</a>
+          <a href="#finder">Cereal Finder</a>
+          <a href="#about">About</a>
+        </nav>
+      </header>
+
+      {/* Main homepage introduction */}
+      <main>
+        <section className="hero-section" id="home">
+          <div className="hero-content">
+            <p className="hero-label">AI-powered cereal recommendations</p>
+
+            <h1>Find the cereal that fits your nutritional goals</h1>
+
+            <p className="hero-description">
+              Choose what matters to you, such as lower sugar, higher protein,
+              more fibre, or fewer calories. Our recommendation system will
+              help you find suitable cereals.
+            </p>
+
+            <a className="primary-button" href="#finder">
+              Find My Cereal
+            </a>
+          </div>
+
+          <div className="hero-visual" aria-hidden="true">
+            <div className="cereal-bowl">
+              <span className="cereal-piece piece-one"></span>
+              <span className="cereal-piece piece-two"></span>
+              <span className="cereal-piece piece-three"></span>
+              <span className="cereal-piece piece-four"></span>
+              <span className="cereal-piece piece-five"></span>
+            </div>
+          </div>
+        </section>
+
+        {/* Nutritional preference form */}
+        <section className="finder-section" id="finder">
+          <div className="section-heading">
+            <p className="section-label">Personalized search</p>
+            <h2>Tell us what you want in your cereal</h2>
+            <p>
+              Enter your preferences below. The recommendation feature will be
+              connected to the backend later.
+            </p>
+          </div>
+
+          <form className="preference-form">
+            <div className="form-group">
+              <label htmlFor="goal">Main nutritional goal</label>
+
+              <select id="goal" name="goal" defaultValue="">
+                <option value="" disabled>
+                  Select a goal
+                </option>
+                <option value="low-sugar">Low sugar</option>
+                <option value="high-protein">High protein</option>
+                <option value="high-fiber">High fibre</option>
+                <option value="low-calorie">Low calorie</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="maxSugar">Maximum sugar</label>
+
+              <input
+                id="maxSugar"
+                name="maxSugar"
+                type="number"
+                min="0"
+                placeholder="Example: 8 grams"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="minimumProtein">Minimum protein</label>
+
+              <input
+                id="minimumProtein"
+                name="minimumProtein"
+                type="number"
+                min="0"
+                placeholder="Example: 4 grams"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="minimumFiber">Minimum fibre</label>
+
+              <input
+                id="minimumFiber"
+                name="minimumFiber"
+                type="number"
+                min="0"
+                placeholder="Example: 3 grams"
+              />
+            </div>
+
+            <button className="submit-button" type="submit">
+              Get Recommendations
+            </button>
+          </form>
+        </section>
+
+        {/* Project information */}
+        <section className="about-section" id="about">
+          <div>
+            <p className="section-label">About the project</p>
+            <h2>Smarter cereal decisions</h2>
+          </div>
+
           <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
+            Smart Cereal Finder compares nutritional information from a cereal
+            dataset and recommends options based on the user's selected goals.
           </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+        </section>
+      </main>
+    </div>
   )
 }
 

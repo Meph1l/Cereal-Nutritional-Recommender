@@ -1,311 +1,134 @@
-/* Main application layout */
-.app {
-  min-height: 100vh;
+import './App.css'
+
+function App() {
+  return (
+    <div className="app">
+      {/* Website navigation */}
+      <header className="navbar">
+        <a className="logo" href="#home">
+          Smart Cereal Finder
+        </a>
+
+        <nav className="nav-links">
+          <a href="#home">Home</a>
+          <a href="#finder">Cereal Finder</a>
+          <a href="#about">About</a>
+        </nav>
+      </header>
+
+      {/* Main homepage introduction */}
+      <main>
+        <section className="hero-section" id="home">
+          <div className="hero-content">
+            <p className="hero-label">AI-powered cereal recommendations</p>
+
+            <h1>Find the cereal that fits your nutritional goals</h1>
+
+            <p className="hero-description">
+              Choose what matters to you, such as lower sugar, higher protein,
+              more fibre, or fewer calories. Our recommendation system will
+              help you find suitable cereals.
+            </p>
+
+            <a className="primary-button" href="#finder">
+              Find My Cereal
+            </a>
+          </div>
+
+          <div className="hero-visual" aria-hidden="true">
+            <div className="cereal-bowl">
+              <span className="cereal-piece piece-one"></span>
+              <span className="cereal-piece piece-two"></span>
+              <span className="cereal-piece piece-three"></span>
+              <span className="cereal-piece piece-four"></span>
+              <span className="cereal-piece piece-five"></span>
+            </div>
+          </div>
+        </section>
+
+        {/* Nutritional preference form */}
+        <section className="finder-section" id="finder">
+          <div className="section-heading">
+            <p className="section-label">Personalized search</p>
+            <h2>Tell us what you want in your cereal</h2>
+            <p>
+              Enter your preferences below. The recommendation feature will be
+              connected to the backend later.
+            </p>
+          </div>
+
+          <form className="preference-form">
+            <div className="form-group">
+              <label htmlFor="goal">Main nutritional goal</label>
+
+              <select id="goal" name="goal" defaultValue="">
+                <option value="" disabled>
+                  Select a goal
+                </option>
+                <option value="low-sugar">Low sugar</option>
+                <option value="high-protein">High protein</option>
+                <option value="high-fiber">High fibre</option>
+                <option value="low-calorie">Low calorie</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="maxSugar">Maximum sugar</label>
+
+              <input
+                id="maxSugar"
+                name="maxSugar"
+                type="number"
+                min="0"
+                placeholder="Example: 8 grams"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="minimumProtein">Minimum protein</label>
+
+              <input
+                id="minimumProtein"
+                name="minimumProtein"
+                type="number"
+                min="0"
+                placeholder="Example: 4 grams"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="minimumFiber">Minimum fibre</label>
+
+              <input
+                id="minimumFiber"
+                name="minimumFiber"
+                type="number"
+                min="0"
+                placeholder="Example: 3 grams"
+              />
+            </div>
+
+            <button className="submit-button" type="submit">
+              Get Recommendations
+            </button>
+          </form>
+        </section>
+
+        {/* Project information */}
+        <section className="about-section" id="about">
+          <div>
+            <p className="section-label">About the project</p>
+            <h2>Smarter cereal decisions</h2>
+          </div>
+
+          <p>
+            Smart Cereal Finder compares nutritional information from a cereal
+            dataset and recommends options based on the user's selected goals.
+          </p>
+        </section>
+      </main>
+    </div>
+  )
 }
 
-/* Navigation */
-.navbar {
-  width: min(1180px, 92%);
-  margin: 0 auto;
-  padding: 24px 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.logo {
-  color: #234b2a;
-  font-size: 1.25rem;
-  font-weight: 800;
-  text-decoration: none;
-}
-
-.nav-links {
-  display: flex;
-  gap: 28px;
-}
-
-.nav-links a {
-  color: #435248;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.nav-links a:hover {
-  color: #2f6d3a;
-}
-
-/* Homepage hero section */
-.hero-section {
-  width: min(1180px, 92%);
-  min-height: 650px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  align-items: center;
-  gap: 70px;
-  padding: 70px 0 100px;
-}
-
-.hero-content {
-  max-width: 680px;
-}
-
-.hero-label,
-.section-label {
-  margin: 0 0 14px;
-  color: #43864c;
-  font-size: 0.85rem;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-
-.hero-content h1 {
-  margin: 0;
-  color: #16391d;
-  font-size: clamp(3rem, 6vw, 5.4rem);
-  line-height: 1.02;
-  letter-spacing: -3px;
-}
-
-.hero-description {
-  max-width: 630px;
-  margin: 26px 0 36px;
-  color: #59675d;
-  font-size: 1.1rem;
-  line-height: 1.8;
-}
-
-.primary-button {
-  display: inline-block;
-  padding: 15px 25px;
-  border-radius: 10px;
-  background-color: #32753d;
-  color: white;
-  font-weight: 800;
-  text-decoration: none;
-  box-shadow: 0 12px 25px rgba(50, 117, 61, 0.2);
-}
-
-.primary-button:hover {
-  background-color: #255c2f;
-}
-
-/* Decorative cereal illustration */
-.hero-visual {
-  min-height: 440px;
-  display: grid;
-  place-items: center;
-  border-radius: 40px;
-  background:
-    radial-gradient(circle at top right, #e0f0c9, transparent 45%),
-    linear-gradient(145deg, #f8ead0, #dcebcf);
-}
-
-.cereal-bowl {
-  position: relative;
-  width: 310px;
-  height: 155px;
-  border-radius: 20px 20px 150px 150px;
-  background: linear-gradient(180deg, #ffffff, #dbe4dd);
-  box-shadow: 0 25px 35px rgba(48, 77, 53, 0.22);
-}
-
-.cereal-bowl::before {
-  content: '';
-  position: absolute;
-  top: -28px;
-  left: 15px;
-  width: 280px;
-  height: 65px;
-  border-radius: 50%;
-  background-color: #f4e0ad;
-  box-shadow: inset 0 5px 10px rgba(99, 73, 28, 0.17);
-}
-
-.cereal-piece {
-  position: absolute;
-  z-index: 1;
-  width: 43px;
-  height: 43px;
-  border: 10px solid #cc8a2f;
-  border-radius: 50%;
-  background: transparent;
-}
-
-.piece-one {
-  top: -35px;
-  left: 55px;
-}
-
-.piece-two {
-  top: -19px;
-  left: 115px;
-}
-
-.piece-three {
-  top: -40px;
-  left: 175px;
-}
-
-.piece-four {
-  top: -10px;
-  left: 220px;
-}
-
-.piece-five {
-  top: -50px;
-  left: 235px;
-}
-
-/* Preference form section */
-.finder-section {
-  padding: 100px max(4%, calc((100% - 1180px) / 2));
-  background-color: #eef5e9;
-}
-
-.section-heading {
-  max-width: 700px;
-  margin-bottom: 42px;
-}
-
-.section-heading h2,
-.about-section h2 {
-  margin: 0 0 16px;
-  color: #183c20;
-  font-size: clamp(2rem, 4vw, 3.2rem);
-}
-
-.section-heading > p:last-child {
-  color: #607065;
-  line-height: 1.7;
-}
-
-.preference-form {
-  padding: 34px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-  border: 1px solid #d9e4d4;
-  border-radius: 22px;
-  background-color: white;
-  box-shadow: 0 18px 45px rgba(56, 83, 58, 0.1);
-}
-
-.form-group {
-  display: grid;
-  gap: 9px;
-}
-
-.form-group label {
-  color: #2c4531;
-  font-weight: 700;
-}
-
-.form-group input,
-.form-group select {
-  width: 100%;
-  padding: 14px;
-  border: 1px solid #cbd8c7;
-  border-radius: 9px;
-  outline: none;
-  background-color: #fbfcfa;
-  color: #253429;
-}
-
-.form-group input:focus,
-.form-group select:focus {
-  border-color: #43864c;
-  box-shadow: 0 0 0 3px rgba(67, 134, 76, 0.12);
-}
-
-.submit-button {
-  grid-column: 1 / -1;
-  padding: 15px 22px;
-  border: none;
-  border-radius: 9px;
-  background-color: #32753d;
-  color: white;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.submit-button:hover {
-  background-color: #255c2f;
-}
-
-/* About section */
-.about-section {
-  width: min(1180px, 92%);
-  margin: 0 auto;
-  padding: 100px 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 70px;
-  align-items: center;
-}
-
-.about-section > p {
-  color: #5b695e;
-  font-size: 1.05rem;
-  line-height: 1.8;
-}
-
-/* Mobile layout */
-@media (max-width: 800px) {
-  .navbar {
-    align-items: flex-start;
-    gap: 22px;
-  }
-
-  .nav-links {
-    gap: 14px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
-
-  .hero-section,
-  .about-section {
-    grid-template-columns: 1fr;
-  }
-
-  .hero-section {
-    padding-top: 40px;
-  }
-
-  .hero-content h1 {
-    letter-spacing: -1.5px;
-  }
-
-  .hero-visual {
-    min-height: 360px;
-  }
-
-  .preference-form {
-    grid-template-columns: 1fr;
-    padding: 24px;
-  }
-
-  .submit-button {
-    grid-column: auto;
-  }
-}
-
-@media (max-width: 520px) {
-  .navbar {
-    flex-direction: column;
-  }
-
-  .nav-links {
-    justify-content: flex-start;
-  }
-
-  .hero-visual {
-    min-height: 290px;
-  }
-
-  .cereal-bowl {
-    transform: scale(0.78);
-  }
-}
+export default App

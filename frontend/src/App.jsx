@@ -1,134 +1,104 @@
-import './App.css'
+import { useState } from "react";
+import "./App.css";
+
+import Navbar from "./components/Navbar";
+import Hero from "./components/Hero";
+import PreferenceForm from "./components/PreferenceForm";
+import RecommendationList from "./components/RecommendationList";
+import LoadingMessage from "./components/LoadingMessage";
+import ErrorMessage from "./components/ErrorMessage";
+import AboutSection from "./components/AboutSection";
+import Footer from "./components/Footer";
 
 function App() {
+  // Store the user's nutritional preferences
+  const [preferences, setPreferences] = useState({
+    goal: "",
+    maxSugar: "",
+    minimumProtein: "",
+    minimumFiber: "",
+  });
+
+  // Store recommendation results
+  const [recommendations, setRecommendations] = useState([]);
+
+  // Control loading and error messages
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // Update the matching form input
+  function handleInputChange(event) {
+    const { name, value } = event.target;
+
+    setPreferences((previousPreferences) => ({
+      ...previousPreferences,
+      [name]: value,
+    }));
+  }
+
+  // Submit nutritional preferences
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    setLoading(true);
+    setError("");
+    setRecommendations([]);
+
+    try {
+      const response = await fetch("/api/recommendations", {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify(preferences),
+      });
+
+      if (!response.ok) {
+        throw new Error("Recommendation request failed.");
+      }
+
+      const data = await response.json();
+
+      setRecommendations(data.recommendations || []);
+    } catch (requestError) {
+      console.error(requestError);
+
+      setError(
+        "The backend is not connected yet. Your preferences were saved, but recommendations cannot be loaded."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="app">
-      {/* Website navigation */}
-      <header className="navbar">
-        <a className="logo" href="#home">
-          Smart Cereal Finder
-        </a>
+      <Navbar />
 
-        <nav className="nav-links">
-          <a href="#home">Home</a>
-          <a href="#finder">Cereal Finder</a>
-          <a href="#about">About</a>
-        </nav>
-      </header>
-
-      {/* Main homepage introduction */}
       <main>
-        <section className="hero-section" id="home">
-          <div className="hero-content">
-            <p className="hero-label">AI-powered cereal recommendations</p>
+        <Hero />
 
-            <h1>Find the cereal that fits your nutritional goals</h1>
+        <PreferenceForm
+          preferences={preferences}
+          onInputChange={handleInputChange}
+          onSubmit={handleSubmit}
+          loading={loading}
+        />
 
-            <p className="hero-description">
-              Choose what matters to you, such as lower sugar, higher protein,
-              more fibre, or fewer calories. Our recommendation system will
-              help you find suitable cereals.
-            </p>
+        {loading && <LoadingMessage />}
 
-            <a className="primary-button" href="#finder">
-              Find My Cereal
-            </a>
-          </div>
+        <ErrorMessage message={error} />
 
-          <div className="hero-visual" aria-hidden="true">
-            <div className="cereal-bowl">
-              <span className="cereal-piece piece-one"></span>
-              <span className="cereal-piece piece-two"></span>
-              <span className="cereal-piece piece-three"></span>
-              <span className="cereal-piece piece-four"></span>
-              <span className="cereal-piece piece-five"></span>
-            </div>
-          </div>
-        </section>
+        <RecommendationList recommendations={recommendations} />
 
-        {/* Nutritional preference form */}
-        <section className="finder-section" id="finder">
-          <div className="section-heading">
-            <p className="section-label">Personalized search</p>
-            <h2>Tell us what you want in your cereal</h2>
-            <p>
-              Enter your preferences below. The recommendation feature will be
-              connected to the backend later.
-            </p>
-          </div>
-
-          <form className="preference-form">
-            <div className="form-group">
-              <label htmlFor="goal">Main nutritional goal</label>
-
-              <select id="goal" name="goal" defaultValue="">
-                <option value="" disabled>
-                  Select a goal
-                </option>
-                <option value="low-sugar">Low sugar</option>
-                <option value="high-protein">High protein</option>
-                <option value="high-fiber">High fibre</option>
-                <option value="low-calorie">Low calorie</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="maxSugar">Maximum sugar</label>
-
-              <input
-                id="maxSugar"
-                name="maxSugar"
-                type="number"
-                min="0"
-                placeholder="Example: 8 grams"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="minimumProtein">Minimum protein</label>
-
-              <input
-                id="minimumProtein"
-                name="minimumProtein"
-                type="number"
-                min="0"
-                placeholder="Example: 4 grams"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="minimumFiber">Minimum fibre</label>
-
-              <input
-                id="minimumFiber"
-                name="minimumFiber"
-                type="number"
-                min="0"
-                placeholder="Example: 3 grams"
-              />
-            </div>
-
-            <button className="submit-button" type="submit">
-              Get Recommendations
-            </button>
-          </form>
-        </section>
-
-        {/* Project information */}
-        <section className="about-section" id="about">
-          <div>
-            <p className="section-label">About the project</p>
-            <h2>Smarter cereal decisions</h2>
-          </div>
-
-          <p>
-            Smart Cereal Finder compares nutritional information from a cereal
-            dataset and recommends options based on the user's selected goals.
-          </p>
-        </section>
+        <AboutSection />
       </main>
+
+      <Footer />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

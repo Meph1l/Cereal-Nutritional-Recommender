@@ -1,104 +1,158 @@
-import { useState } from "react";
-import "./App.css";
-
-import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import PreferenceForm from "./components/PreferenceForm";
-import RecommendationList from "./components/RecommendationList";
-import LoadingMessage from "./components/LoadingMessage";
-import ErrorMessage from "./components/ErrorMessage";
-import AboutSection from "./components/AboutSection";
-import Footer from "./components/Footer";
+import { useState, useEffect } from 'react'
+import reactLogo from './assets/react.svg'
+import viteLogo from './assets/vite.svg'
+import heroImg from './assets/hero.png'
+import './App.css'
 
 function App() {
-  // Store the user's nutritional preferences
-  const [preferences, setPreferences] = useState({
-    goal: "",
-    maxSugar: "",
-    minimumProtein: "",
-    minimumFiber: "",
-  });
+  const [count, setCount] = useState(0)
 
-  // Store recommendation results
-  const [recommendations, setRecommendations] = useState([]);
+  async function testCall(){
+    const res = await fetch('/testProxy');
+    const data = await res.json();
 
-  // Control loading and error messages
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  // Update the matching form input
-  function handleInputChange(event) {
-    const { name, value } = event.target;
-
-    setPreferences((previousPreferences) => ({
-      ...previousPreferences,
-      [name]: value,
-    }));
+    return data;
   }
 
-  // Submit nutritional preferences
-  async function handleSubmit(event) {
-    event.preventDefault();
+  async function testAPI(){
+    const res = await fetch('/testAPI');
+    const data = await res.json();
 
-    setLoading(true);
-    setError("");
-    setRecommendations([]);
+    return data;
+  }
 
-    try {
-      const response = await fetch("/api/recommendations", {
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify(preferences),
-      });
-
-      if (!response.ok) {
-        throw new Error("Recommendation request failed.");
+  useEffect( () => {
+     async function fetchCallData() {
+      try {
+        const data = await testCall();
+        console.log(data); 
+      } catch (error) {
+        console.error("Failed to fetch:", error);
       }
-
-      const data = await response.json();
-
-      setRecommendations(data.recommendations || []);
-    } catch (requestError) {
-      console.error(requestError);
-
-      setError(
-        "The backend is not connected yet. Your preferences were saved, but recommendations cannot be loaded."
-      );
-    } finally {
-      setLoading(false);
     }
-  }
+    async function fetchAPIData() {
+      try {
+        const data = await testAPI();
+        console.log(data); 
+      } catch (error) {
+        console.error("Failed to fetch:", error);
+      }
+    }
+
+  //fetchAPIData(); //to test openai responses
+  fetchCallData();
+  }, []);
 
   return (
-    <div className="app">
-      <Navbar />
+    <>
+      <section id="center">
+        <div className="hero">
+          <img src={heroImg} className="base" width="170" height="179" alt="" />
+          <img src={reactLogo} className="framework" alt="React logo" />
+          <img src={viteLogo} className="vite" alt="Vite logo" />
+        </div>
+        <div>
+          <h1>Get started</h1>
+          <p>
+            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
+          </p>
+        </div>
+        <button
+          type="button"
+          className="counter"
+          onClick={() => setCount((count) => count + 1)}
+        >
+          Count is {count}
+        </button>
+      </section>
 
-      <main>
-        <Hero />
+      <div className="ticks"></div>
 
-        <PreferenceForm
-          preferences={preferences}
-          onInputChange={handleInputChange}
-          onSubmit={handleSubmit}
-          loading={loading}
-        />
+      <section id="next-steps">
+        <div id="docs">
+          <svg className="icon" role="presentation" aria-hidden="true">
+            <use href="/icons.svg#documentation-icon"></use>
+          </svg>
+          <h2>Documentation</h2>
+          <p>Your questions, answered</p>
+          <ul>
+            <li>
+              <a href="https://vite.dev/" target="_blank">
+                <img className="logo" src={viteLogo} alt="" />
+                Explore Vite
+              </a>
+            </li>
+            <li>
+              <a href="https://react.dev/" target="_blank">
+                <img className="button-icon" src={reactLogo} alt="" />
+                Learn more
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div id="social">
+          <svg className="icon" role="presentation" aria-hidden="true">
+            <use href="/icons.svg#social-icon"></use>
+          </svg>
+          <h2>Connect with us</h2>
+          <p>Join the Vite community</p>
+          <ul>
+            <li>
+              <a href="https://github.com/vitejs/vite" target="_blank">
+                <svg
+                  className="button-icon"
+                  role="presentation"
+                  aria-hidden="true"
+                >
+                  <use href="/icons.svg#github-icon"></use>
+                </svg>
+                GitHub
+              </a>
+            </li>
+            <li>
+              <a href="https://chat.vite.dev/" target="_blank">
+                <svg
+                  className="button-icon"
+                  role="presentation"
+                  aria-hidden="true"
+                >
+                  <use href="/icons.svg#discord-icon"></use>
+                </svg>
+                Discord
+              </a>
+            </li>
+            <li>
+              <a href="https://x.com/vite_js" target="_blank">
+                <svg
+                  className="button-icon"
+                  role="presentation"
+                  aria-hidden="true"
+                >
+                  <use href="/icons.svg#github-icon"></use>
+                </svg>
+                X.com
+              </a>
+            </li>
+            <li>
+              <a href="https://bsky.app/profile/vite.dev" target="_blank">
+                <svg
+                  className="button-icon"
+                  role="presentation"
+                  aria-hidden="true"
+                >
+                  <use href="/icons.svg#github-icon"></use>
+                </svg>
+                Bluesky
+              </a>
+            </li>
+          </ul>
+        </div>
+      </section>
 
-        {loading && <LoadingMessage />}
-
-        <ErrorMessage message={error} />
-
-        <RecommendationList recommendations={recommendations} />
-
-        <AboutSection />
-      </main>
-
-      <Footer />
-    </div>
-  );
+      <div className="ticks"></div>
+      <section id="spacer"></section>
+    </>
+  )
 }
 
-export default App;
+export default App

@@ -17,4 +17,3 @@
 8. in terminal one, CD into ./frontend 
 9. run 'npm run dev'
 10. click the link that shows up in the terminal when 'npm run dev' is run
-11. Create a file called .env in the backend with your kaggle username and API TOKEN/KEY for the dataset

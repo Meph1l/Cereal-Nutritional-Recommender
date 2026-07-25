@@ -12,8 +12,56 @@ secureData.config({ path: path.join(__dirname, '.env') });
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+function normalizeDatabaseRow(row) {
+  return Object.fromEntries(
+    Object.entries(row).map(([key, value]) => [key, value === null ? '' : value])
+  );
+}
+
+function queryDatabase(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    if (!dbConnection) {
+      reject(new Error('MySQL is not configured.'));
+      return;
+    }
+
+    dbConnection.query(sql, params, (error, results) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      resolve(results);
+    });
+  });
+}
+
+async function loadCerealCatalogFromDatabase() {
+  if (!dbConnection) {
+    return [];
+  }
+
+  try {
+    const rows = await queryDatabase('SELECT * FROM cereal');
+    return rows
+      .filter((row) => row.name && String(row.name).trim())
+      .map(normalizeDatabaseRow);
+  } catch (error) {
+    console.warn('Failed to load cereals from the MySQL table "cereal":', error.message);
+    return [];
+  }
+}
+
+let cerealCatalog = [];
+
+async function initializeCerealCatalog() {
+  cerealCatalog = await loadCerealCatalogFromDatabase();
+  console.log(`Loaded ${cerealCatalog.length} cereals from the MySQL table "cereal".`);
+}
+
 app.use(cors({ origin: ['http://localhost:5173', 'http://127.0.0.1:5173'] }));
-app.use(express.json());
+app.use(express.json({ strict: false }));
+app.use(express.text({ type: ['text/plain', 'text/*', 'application/json', 'application/*+json'] }));
 
 let dbConnection = null;
 let openai = null;
@@ -71,6 +119,28 @@ app.get('/testAPI', async (req, res) => {
   res.json({ message: 'backend working for open ai', data });
 });
 
+function normalizeSearchText(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+app.get('/api/cereals', (req, res) => {
+  const query = (req.query.name || '').toString().trim();
+  const normalizedQuery = normalizeSearchText(query);
+
+  const filtered = !normalizedQuery
+    ? cerealCatalog.slice(0, 12)
+    : cerealCatalog.filter((cereal) => {
+        const haystack = Object.values(cereal)
+          .map((value) => normalizeSearchText(value))
+        return haystack.includes(normalizedQuery);
+      });
+
+  res.json({ cereals: filtered, total: filtered.length });
+});
+
 app.get('/downloadKaggleDataset', async (req, res) => {
   try {
     const datasetSlug = req.query.dataset || 'crawford/80-cereals';
@@ -90,6 +160,68 @@ app.get('/downloadKaggleDataset', async (req, res) => {
       error: error.message
     });
   }
+});
+
+app.use('/api/assistant/chat', (req, res, next) => {
+  let buffer = '';
+  req.setEncoding('utf8');
+  req.on('data', (chunk) => {
+    buffer += chunk;
+  });
+  req.on('end', () => {
+    req.rawBody = buffer;
+    console.log('assistant middleware body:', JSON.stringify(buffer));
+    next();
+  });
+  req.on('error', () => next());
+});
+
+app.post('/api/assistant/chat', async (req, res) => {
+  const userMessage = (req.rawBody || '').trim();
+  console.log('assistant handler message:', JSON.stringify(userMessage));
+
+  if (typeof req.body === 'string') {
+    userMessage = req.body.trim();
+  } else if (req.body && typeof req.body === 'object') {
+    userMessage = (req.body.message || req.body.text || '').toString().trim();
+  } else if (Buffer.isBuffer(req.body)) {
+    userMessage = req.body.toString('utf8').trim();
+  }
+
+  console.log('assistant parsed message:', JSON.stringify(userMessage));
+
+  if (!userMessage) {
+    return res.status(400).json({ reply: 'Please ask for a cereal recommendation.' });
+  }
+
+  if (!openai) {
+    return res.status(503).json({ reply: 'The AI assistant is not configured right now.' });
+  }
+
+  const datasetContext = cerealCatalog.slice(0, 20).map((cereal) => {
+    return `${cereal.name} | category: ${cereal.category || 'n/a'} | calories: ${cereal.calories || 'n/a'} | protein: ${cereal.protein || 'n/a'} | fiber: ${cereal.fiber || 'n/a'} | sugars: ${cereal.sugars || 'n/a'}`;
+  }).join('\n');
+
+  try {
+    const response = await openai.responses.create({
+      model: process.env.OPENAI_MODEL || 'gpt-4.1-mini',
+      input: `You are a friendly cereal recommendation assistant for this app. Use the cereal dataset below to answer the user's request with 2-4 specific recommendations and a brief reason for each. Keep the reply concise and practical.\n\nUser request: ${userMessage}\n\nDataset sample:\n${datasetContext}`
+    });
+
+    res.json({ reply: response.output_text || 'I could not generate a recommendation right now.' });
+  } catch (error) {
+    console.error('OpenAI assistant request failed:', error);
+    res.status(500).json({ reply: 'I hit an issue while generating a recommendation. Please try again.' });
+  }
+});
+
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    console.warn(`Invalid JSON payload received for ${req.method} ${req.path}`);
+    return res.status(400).json({ error: 'Invalid JSON payload' });
+  }
+
+  next(err);
 });
 
 function getKaggleCredentials() {
@@ -171,7 +303,14 @@ async function apiTester() {
   }
 }
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT}.`);
-});
+initializeCerealCatalog()
+  .then(() => {
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Server running on port ${PORT}.`);
+    });
+  })
+  .catch((error) => {
+    console.error('Failed to initialize cereal catalog:', error);
+    process.exit(1);
+  });
 

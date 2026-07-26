@@ -50,6 +50,7 @@ Then the branches are merged for the login usecase to work
 
 # Rollback
 18. Can rollback to and old commit using: 'git log --oneline' then 'git checkout [Hexidecimal Code]'
+<<<<<<< HEAD
     A commit is like snapshot of your code
 
 
@@ -59,3 +60,6 @@ git fetch origin
 git checkout [coworker-branch-name]
 git checkout name           (To go back to main)
 git stash pop
+=======
+    A commit is like snapshot of your code
+>>>>>>> 0e11615d11b237b195119fd26bb3845a0b98d19a

@@ -33,10 +33,12 @@ function CerealCard({ cereal }) {
             Sugar
           </span>
 
-          <strong>
-            {cereal.sugars ?? "N/A"}
-            {cereal.sugars !== undefined ? " g" : ""}
-          </strong>
+       <strong>
+           {cereal.sugar ?? cereal.sugars ?? "N/A"}
+           {cereal.sugar !== undefined || cereal.sugars !== undefined
+           ? " g"
+            : ""}
+        </strong>
         </div>
 
         <div className="nutrition-item">

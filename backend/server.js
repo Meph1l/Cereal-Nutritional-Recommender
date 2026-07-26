@@ -4,13 +4,17 @@ const fs = require('fs');
 const https = require('https');
 const cors = require('cors');
 const secureData = require('dotenv');
-const mysql = require('mysql');
+//const mysql = require('mysql');
+const mysql = require('mysql2');  //I Need mysql2 in order for my db to connect
 const { OpenAI } = require('openai');
 
 secureData.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+
+
 
 function normalizeDatabaseRow(row) {
   return Object.fromEntries(
@@ -63,6 +67,9 @@ app.use(cors({ origin: ['http://localhost:5173', 'http://127.0.0.1:5173'] }));
 app.use(express.json({ strict: false }));
 app.use(express.text({ type: ['text/plain', 'text/*', 'application/json', 'application/*+json'] }));
 
+
+
+
 let dbConnection = null;
 let openai = null;
 
@@ -93,6 +100,9 @@ if (process.env.OPENAI_API_KEY) {
   console.warn('OPENAI_API_KEY not set. /testAPI will return a 503 response.');
 }
 
+
+
+
 app.get('/', (req, res) => {
   return res.json({ status: 'server is alive' });
 });
@@ -118,6 +128,61 @@ app.get('/testAPI', async (req, res) => {
 
   res.json({ message: 'backend working for open ai', data });
 });
+
+
+app.post('/api/sendQuestionToChatgpt', async (req, res) => {
+  try{
+    const {goal, maxSugar, minimumProtein, minimumFiber} = req.body;
+  
+    const question = `What cereal closely meets these requirements: Max Sugar: ${maxSugar}, minimum protein: ${minimumProtein}, minimum fiber: ${minimumFiber}. Prioritize: ${goal}` 
+    console.log("QUESTION:" + question);
+
+    const cerealData = await getAllCereals();
+
+    //format: [question], the data is in this json: [json of all cereal data]  
+    const answeredQuestion = await sendingQuestion(question, cerealData);
+    console.log(answeredQuestion);
+    
+    res.json({recommendations: answeredQuestion});
+  }
+  catch(err){
+    console.error("Error -->" + err);
+  }
+  
+});
+
+
+async function getAllCereals(){
+  let fullCerealJson;
+  fullCerealJson  = await loadCerealCatalogFromDatabase();
+  //console.log(JSON.stringify(fullCerealJson));
+  return JSON.stringify(fullCerealJson);
+}
+
+//documentation: https://developers.openai.com/api/docs/guides/text
+async function sendingQuestion(questionText, jsonDataSet){
+   try {
+    console.log('Sending Question');
+    const response = await openai.responses.create({
+      model: 'gpt-5-mini',
+      input: [
+        {
+          role: "system",
+          content: "reccomend cereal based on user requirements. the json data for cereal is: " + jsonDataSet
+        }
+        ,{
+          role: 'user',
+          content: questionText
+        }
+      ]
+    });
+
+    return response.output_text;
+  } catch (err) {
+    return err;
+  }
+}
+ 
 
 function normalizeSearchText(value) {
   return String(value || '')
@@ -287,6 +352,9 @@ function downloadKaggleDataset(datasetSlug) {
     request.end();
   });
 }
+
+
+
 
 async function apiTester() {
   try {

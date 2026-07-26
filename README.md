@@ -1,19 +1,27 @@
 # Cereal-Nutritional-Recommender
 
-# What to add
+# Setup
 1. add an .env file in the ./backend folder to store the Openai API key 
-    1.a. API key can be found in example project prof gave, if that key doesnt work then we email if ourselves
-2. Need to add the api route for every new api you add into in the vite.config.js
+2. In mysql, create a database, right click on 'Tables', Click 'Table Data Import Wizard', give the wizard the crawford_80-cereals csv file to auto create the table with cereal data.
+3. In the .env file add these variables with the corresponding information:
+    OPENAI_API_KEY=
+    DB_HOST=
+    DB_PORT=
+    DB_USER=
+    DB_PASSWORD=
+    DB_NAME=
+    KAGGLE_USERNAME=
+    KAGGLE_KEY=
+    KAGGLE_API_TOKEN=
+4. cd into .\Cereal-Nutritional-Recommender\frontend\
+5. run 'npm install'
+6. cd into .\Cereal-Nutritional-Recommender\backend\
+7. run 'npm install'
 
-
-# Setting up project to work
-1. cd into ./backend
-2. run 'npm install'
-3. cd into ./frontend
-4. run 'npm install'
-5. create 2 terminals
-6. in terminal two, CD into ./backend 
-7. run 'node server.js' 
-8. in terminal one, CD into ./frontend 
-9. run 'npm run dev'
-10. click the link that shows up in the terminal when 'npm run dev' is run
+# Running Production Version of Website
+1. create 2 terminals
+2. in terminal two, CD into ./backend 
+3. run 'node server.js' 
+4. in terminal one, CD into ./frontend 
+5. run 'npm run dev'
+6. click the link that shows up in the terminal when 'npm run dev' is run

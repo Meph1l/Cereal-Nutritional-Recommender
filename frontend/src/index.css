@@ -1,47 +1,33 @@
-:root {
-  font-family: Inter, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color: #2f2438;
-  background: linear-gradient(135deg, #f7f2ff 0%, #fff9ef 100%);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  --text: #6e6477;
-  --text-h: #2f2438;
-  --bg: #fffdf9;
-  --border: #e9dff5;
-  --accent: #8a42d8;
-  --accent-bg: rgba(138, 66, 216, 0.12);
-  --accent-border: rgba(138, 66, 216, 0.3);
-  --shadow: 0 20px 50px rgba(89, 55, 150, 0.12);
-}
-
+/* Global browser reset */
 * {
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
+  min-width: 320px;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f7f2ff 0%, #fff9ef 100%);
-}
-
-#root {
-  max-width: 1100px;
-  margin: 0 auto;
-  min-height: 100vh;
-}
-
-h1,
-h2,
-h3,
-p {
-  margin: 0;
+  font-family:
+    Inter, Arial, Helvetica, sans-serif;
+  background-color: #fbfcf8;
+  color: #243328;
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+img {
+  max-width: 100%;
 }
